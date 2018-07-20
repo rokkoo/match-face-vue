@@ -16,10 +16,13 @@
             <p v-if="isInitial || isCompleted">
               Desliza el(los) archivos aquí<br> o click para buscarlos
             </p>
-            <p v-if="isSaving">
-              Subiendo {{ fileCount }} archivos...
-            </p>
           </div>
+        </div>
+        <div class="loader" v-if="isSaving">
+          <div class="inner one"></div>
+          <div class="inner two"></div>
+          <div class="inner three"></div>
+          <p class="train">Subiendo archivos...</p>
         </div>
       </form>
       <!--SUCCESS-->
@@ -101,19 +104,22 @@ export default {
     save(formData) {
       // upload data to the server
       //TODO ver como envar un objeto por el request al backend
-      this.currentStatus = STATUS_SAVING
-      formData.append('usuario', this.$store.getters.getUsuario);
-      formData.append('persona', this.$store.getters.getPersona);
+      this.currentStatus = STATUS_SAVING;
+      formData.append("usuario", this.$store.getters.getUsuario);
+      formData.append("persona", this.$store.getters.getPersona);
       upload(formData)
-        // .then(wait(1500)) // DEV ONLY: wait for 1.5s
-        .then(x => {
-          this.uploadedFiles = [].concat(x);
+        .then(status => {
           this.currentStatus = STATUS_SUCCESS;
         })
+        // // .then(wait(1500)) // DEV ONLY: wait for 1.5s
+        // .then(x => {
+        //   this.uploadedFiles = [].concat(x);
+        //   this.currentStatus = STATUS_SUCCESS;
+        // })
         .catch(err => {
           this.uploadError = err.response;
           // console.log(err.response.data.error.message)
-          console.log(err.response)
+          console.log(err.response);
           this.currentStatus = STATUS_FAILED;
         });
     },
@@ -133,8 +139,8 @@ export default {
         //** TODO */
         // Si no existe el suario o la persona volver a preguntar
         this.save(formData);
-      }else {
-        alert('Volver a preguntar por el user')
+      } else {
+        alert("Volver a preguntar por el user");
       }
     }
   },
@@ -158,5 +164,78 @@ export default {
 .info p {
   width: 40%;
   opacity: 0.4;
+}
+//loading
+.train {
+  padding-top: 63px;
+  font-size: 12pt;
+  opacity: 0.4;
+}
+
+.loader {
+  position: absolute;
+  top: calc(50% - 32px);
+  left: calc(50% - 32px);
+  margin-top: 55px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  perspective: 800px;
+}
+
+.inner {
+  position: absolute;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.inner.one {
+  left: 0%;
+  top: 0%;
+  animation: rotate-one 1s linear infinite;
+  border-bottom: 3px solid rgb(32, 33, 33);
+}
+
+.inner.two {
+  right: 0%;
+  top: 0%;
+  animation: rotate-two 1s linear infinite;
+  border-right: 3px solid rgb(32, 33, 33);
+}
+
+.inner.three {
+  right: 0%;
+  bottom: 0%;
+  animation: rotate-three 1s linear infinite;
+  border-top: 3px solid rgb(32, 33, 33);
+}
+
+@keyframes rotate-one {
+  0% {
+    transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg);
+  }
+}
+
+@keyframes rotate-two {
+  0% {
+    transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg);
+  }
+}
+
+@keyframes rotate-three {
+  0% {
+    transform: rotateX(35deg) rotateY(55deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg);
+  }
 }
 </style>
